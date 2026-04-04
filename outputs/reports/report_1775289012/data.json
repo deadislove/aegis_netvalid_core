@@ -1,0 +1,572 @@
+[
+    {
+        "time": 0,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 1,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 2,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 3,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 4,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 5,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 6,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 7,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 8,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 9,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 10,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 11,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 12,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 13,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 14,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 15,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 16,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 17,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 18,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 19,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 20,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 21,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 22,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 23,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 24,
+        "mbps": 0.0,
+        "threats": 16
+    },
+    {
+        "time": 25,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 26,
+        "mbps": 0.0,
+        "threats": 82
+    },
+    {
+        "time": 27,
+        "mbps": 0.0,
+        "threats": 169
+    },
+    {
+        "time": 28,
+        "mbps": 0.0,
+        "threats": 242
+    },
+    {
+        "time": 29,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 30,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 31,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 32,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 33,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 34,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 35,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 36,
+        "mbps": 0.0,
+        "threats": 249
+    },
+    {
+        "time": 37,
+        "mbps": 0.0,
+        "threats": 250
+    },
+    {
+        "time": 38,
+        "mbps": 0.0,
+        "threats": 250
+    },
+    {
+        "time": 39,
+        "mbps": 0.0,
+        "threats": 250
+    },
+    {
+        "time": 40,
+        "mbps": 0.0,
+        "threats": 250
+    },
+    {
+        "time": 41,
+        "mbps": 0.0,
+        "threats": 250
+    },
+    {
+        "time": 42,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 43,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 44,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 45,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 46,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 47,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 48,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 49,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 50,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 51,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 52,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 53,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 54,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 55,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 56,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 57,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 58,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 59,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 60,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 61,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 62,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 63,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 64,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 65,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 66,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 67,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 68,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 69,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 70,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 71,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 72,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 73,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 74,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 75,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 76,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 77,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 78,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 79,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 80,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 81,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 82,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 83,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 84,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 85,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 86,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 87,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 88,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 89,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 90,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 91,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 92,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 93,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 94,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 95,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 96,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 97,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 98,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 99,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 100,
+        "mbps": 0.0,
+        "threats": 252
+    },
+    {
+        "time": 101,
+        "mbps": 0.0,
+        "threats": 254
+    },
+    {
+        "time": 102,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 103,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 104,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 105,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 106,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 107,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 108,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 109,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 110,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 111,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 112,
+        "mbps": 0.0,
+        "threats": 260
+    },
+    {
+        "time": 113,
+        "mbps": 0.0,
+        "threats": 260
+    }
+]

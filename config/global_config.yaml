@@ -1,0 +1,12 @@
+system:
+  log_level: "INFO"
+  report_path: "./temp/reports"
+  cloud_endpoint: "https://api.aegis-netvalid.com/v1"
+
+engines:
+  wifi_monitor:
+    interval: 1
+  iot_simulator:
+    default_devices: 10
+  stresser:
+    default_bandwidth: "100M"

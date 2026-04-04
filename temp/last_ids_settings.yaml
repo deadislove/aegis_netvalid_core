@@ -1,0 +1,33 @@
+detection_settings:
+  scan_threshold_packets: 100
+  time_window: 10
+device_profiles:
+  IPCamera:
+    allowed_protocols:
+    - UDP
+    - RTP
+    max_kbps: 5000
+  LightBulb:
+    allowed_protocols:
+    - TCP
+    - MQTT
+    max_kbps: 50
+  Unknown:
+    allowed_protocols:
+    - TCP
+    - UDP
+    - ICMP
+    max_kbps: 100
+system:
+  interface: null
+  log_path: logs/guardian.log
+  max_cpu_percent: 80
+threat_signatures:
+  DDOS_ATTACK:
+    description: "\U0001F525 Critical: Potential Outbound DDoS Attack"
+    min_kbps: 10000
+  PORT_SCAN:
+    description: "\U0001F6A8 Potential Port Scanning detected (High frequency)"
+    max_time_gap: 1.0
+    min_packet_count: 100
+    min_ports: 50

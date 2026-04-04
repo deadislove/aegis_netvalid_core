@@ -1,0 +1,397 @@
+[
+    {
+        "time": 0,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 1,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 2,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 3,
+        "mbps": 0.0,
+        "threats": 0
+    },
+    {
+        "time": 4,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 5,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 6,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 7,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 8,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 9,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 10,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 11,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 12,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 13,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 14,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 15,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 16,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 17,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 18,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 19,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 20,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 21,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 22,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 23,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 24,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 25,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 26,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 27,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 28,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 29,
+        "mbps": 0.0,
+        "threats": 14
+    },
+    {
+        "time": 30,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 31,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 32,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 33,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 34,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 35,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 36,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 37,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 38,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 39,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 40,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 41,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 42,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 43,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 44,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 45,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 46,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 47,
+        "mbps": 0.0,
+        "threats": 22
+    },
+    {
+        "time": 48,
+        "mbps": 0.0,
+        "threats": 23
+    },
+    {
+        "time": 49,
+        "mbps": 0.0,
+        "threats": 23
+    },
+    {
+        "time": 50,
+        "mbps": 0.0,
+        "threats": 23
+    },
+    {
+        "time": 51,
+        "mbps": 0.0,
+        "threats": 26
+    },
+    {
+        "time": 52,
+        "mbps": 0.0,
+        "threats": 30
+    },
+    {
+        "time": 53,
+        "mbps": 0.0,
+        "threats": 30
+    },
+    {
+        "time": 54,
+        "mbps": 0.0,
+        "threats": 30
+    },
+    {
+        "time": 55,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 56,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 57,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 58,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 59,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 60,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 61,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 62,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 63,
+        "mbps": 0.0,
+        "threats": 38
+    },
+    {
+        "time": 64,
+        "mbps": 0.0,
+        "threats": 49
+    },
+    {
+        "time": 65,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 66,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 67,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 68,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 69,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 70,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 71,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 72,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 73,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 74,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 75,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 76,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 77,
+        "mbps": 0.0,
+        "threats": 54
+    },
+    {
+        "time": 78,
+        "mbps": 0.0,
+        "threats": 54
+    }
+]
