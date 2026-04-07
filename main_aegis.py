@@ -22,6 +22,7 @@ from engines.traffic_stresser.stresser_engine import StresserEngine
 from engines.wifi_monitor.monitor_engine import MonitorEngine
 
 from core.aegis_core import AegisCore
+from core.cloud_validator import CloudValidator
 from core.aegis_report_core import AegisReportCore
 from core.orchestrator import Orchestrator
 from core.data_aggregator import DataAggregator
@@ -48,6 +49,14 @@ class AegisCLI:
         # Initialize core controllers
         self.orchestrator = Orchestrator(self.core, self.engines)
         self.data_aggregator = DataAggregator(self.engines)
+        
+        # Initialize Cloud Validator
+        try:
+            self.cloud_validator = CloudValidator(self.core, self.config)
+        except Exception as e:
+            self.core.aegis_log(f"CloudValidator failed to load: {e}", "System")
+            self.cloud_validator = None
+        self.last_cloud_sync = 0
 
         # Initialize report manager
         self.report_manager = AegisReportCore(
@@ -94,6 +103,7 @@ class AegisCLI:
         
         help_table.add_row("help", "Show this help menu")
         help_table.add_row("set <path> <val>", "Update config (e.g., set ids.rules.threat_signatures.PORT_SCAN.min_ports 50)")
+        help_table.add_row("set cloud.enabled true/false", "Enable or disable AWS CloudWatch synchronization")
         help_table.add_row("stress start/stop", "Control the traffic stresser engine")
         help_table.add_row("spawn", "Spawn 5 more simulated IoT devices")
         help_table.add_row("infect <IP>", "Trigger infection simulation on target IP")
@@ -199,6 +209,15 @@ class AegisCLI:
                     conf["ids"] = {}
                 conf["ids"]["config_path"] = temp_ids_path
                 conf["ids"]["rules"] = ids_rules
+                
+                # Ensure 'cloud' key exists for backward compatibility
+                if "cloud" not in conf:
+                    conf["cloud"] = {
+                        "enabled": False,
+                        "region": "us-east-1",
+                        "sync_interval": 60,
+                        "namespace": "Aegis/NetValid"
+                    }
                 return conf
             
         # 3. If even last_config.json doesn't exist, create a completely new preset.
@@ -226,6 +245,12 @@ class AegisCLI:
                 "interface": "en0",
                 "config_path": temp_ids_path,
                 "rules": ids_rules
+                },
+            "cloud": {
+                "enabled": False,
+                "region": "us-east-1",
+                "sync_interval": 60,
+                "namespace": "Aegis/NetValid"
             }
         }
         self._save_config(conf)
@@ -285,6 +310,13 @@ class AegisCLI:
             for engine in self.engines.values():
                 if hasattr(engine, 'gateway_ip'):
                     engine.gateway_ip = value
+
+        # React to Cloud Configuration changes
+        if key_path.startswith("cloud."):
+            if self.cloud_validator:
+                self.cloud_validator.refresh_config(self.config)
+            else:
+                console.print("[yellow]Warning: CloudValidator is not initialized (check logs for errors). AWS sync unavailable.[/yellow]")
 
         console.print(f"[green]Config Updated: {key_path} = {value}[/green]")
 
@@ -396,7 +428,7 @@ class AegisCLI:
                 elif cmd == "spawn":
                     self.engines["Simulator"].spawn_devices(5)
                 else:
-                    console.print(f"[red]Unknown command: {cmd}[/red] (Try: help, spawn, infect [IP], stress start, back)")
+                    console.print(f"[red]Unknown command: {cmd}[/red] (Try: help, set cloud.enabled true, stress start, back)")
 
             if self.running:
                 console.print("[dim]Returning to Dashboard...[/dim]")
@@ -441,6 +473,14 @@ class AegisCLI:
                     "[bold cyan]Press ENTER to input command[/bold cyan]", 
                     title="System Status", border_style="blue"
                 ))
+                
+                # Cloud Sync Logic
+                current_time = time.time()
+                cloud_conf = self.config.get("cloud", {})
+                if self.cloud_validator and current_time - self.last_cloud_sync >= cloud_conf.get("sync_interval", 60):
+                    self.cloud_validator.sync_to_cloud(self.data_aggregator.get_latest_summary())
+                    self.last_cloud_sync = current_time
+                    
                 time.sleep(0.2)
         except KeyboardInterrupt:
             self.running = False
@@ -457,7 +497,7 @@ class AegisCLI:
 
 if __name__ == "__main__":
     try:
-        print("DEBUG: Initializing Core...")
+        #print("DEBUG: Initializing Core...")
         
         app = AegisCLI()
         app.run()
