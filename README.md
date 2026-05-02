@@ -4,14 +4,12 @@ Aegis NetValid Core is a robust, multi-engine validation framework engineered fo
 
 ## 🏗️ System Architecture
 Aegis Core utilizes a modular, engine-driven architecture designed for scalability and decoupling:
-
 - Orchestrator: The brain of the system. It manages the lifecycle (launch, termination, health checks) of all sub-engines.
 - Data Aggregator: A centralized hub that samples metrics from all engines to provide a unified, time-synced data stream.
-- Engines: Independent task units (IDS, Simulator, Stresser, WiFi) invoked via decoupled calls from the Orchestrator.
+- Engines: Independent task units (IDS, SoC Guardian, Net Services, etc.) invoked via decoupled calls from the Orchestrator.
 - Core Infrastructure: Provides non-blocking logging, configuration persistence, and TUI (Terminal User Interface) rendering.
 
 ## 📂 Detailed Directory Structure
-
 ```
 Aegis_NetValid_Core/
 ├── main_aegis.py           # 🚀 Main entry point (CLI)

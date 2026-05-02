@@ -125,7 +125,7 @@ class AegisCLI:
                             out = raw_out.decode(enc)
                             break
                         except UnicodeDecodeError: continue
-                    # Support various language outputs by matching the common 'Gateway' keyword or local variants
+                    # Support international locales by matching keywords and extracting IPv4
                     match = re.search(r"(?:Default Gateway|Gateway|預設閘道).*: ([\d\.]+)", out)
                     return match.group(1) if match else "192.168.0.1"
                 case "Darwin":
@@ -153,7 +153,7 @@ class AegisCLI:
                         pass
                     return "192.168.0.1"
         except Exception:
-            return "192.168.0.1"
+            return "192.168.1.1" # Fallback to common alternative gateway
         
     def get_local_ip(self):
         os_type = platform.system()
@@ -171,13 +171,12 @@ class AegisCLI:
                         out = raw_out.decode(enc)
                         break
                     except UnicodeDecodeError: continue
-                
                 # Generalized regex to capture IPv4 address across different Windows localizations
                 ips = re.findall(r"(?:IPv4 Address|IPv4 位址)[\.\s\:]+([\d\.]+)", out)
                 return ips[0] if ips else "127.0.0.1"
-
             elif os_type == "Linux":
-                return subprocess.check_output(["hostname", "-I"]).decode().split()[0]
+                # Using a more robust method to get IP if hostname -I fails
+                return subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().strip() or "127.0.0.1"
 
         except Exception:
             return "127.0.0.1"
