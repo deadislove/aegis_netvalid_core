@@ -11,6 +11,67 @@ Aegis Core utilizes a modular, engine-driven architecture designed for scalabili
 - Core Infrastructure: Provides non-blocking logging, configuration persistence, and TUI (Terminal User Interface) rendering.
 
 ## 📂 Detailed Directory Structure
+# 🔌 Hardware Integration Guide
+
+This document describes how Aegis NetValid Core interfaces with physical hardware and embedded drivers.
+
+## 1. SoC Thermal & Power (I2C/PoE)
+The `SoCGuardianEngine` monitors hardware health through the Linux kernel's `sysfs` and `procfs` interfaces.
+
+### Thermal Monitoring
+By default, Aegis reads from `/sys/class/thermal/thermal_zone0/temp`. If your SoC uses a different path (e.g., Rockchip or i.MX8), update the `thermal_path` in `global_config.yaml`.
+
+### PoE & I2C Power Monitoring
+For hardware supporting PoE (Power over Ethernet), Aegis can be extended to read Power Sourcing Equipment (PSE) controllers via I2C.
+- **Library**: Use `smbus2` for Python-based I2C communication.
+- **Example**: Reading a PMIC register to verify current draw during a 100Mbps stress test.
+
+## 2. GPIO & Interrupts
+During bring-up, verifying GPIO stability under network load is critical.
+- **Path**: `/sys/class/gpio/`
+- **Validation**: Aegis can monitor the frequency of interrupts in `/proc/interrupts` to ensure that network driver activity isn't starving hardware interrupts.
+
+## 3. Bluetooth Low Energy (BLE)
+Aegis can validate BLE-to-WiFi co-existence. 
+- **Tooling**: Aegis interfaces with `hcitool` or `bluetoothctl`.
+- **Metric**: RSSI stability of BLE beacons while the `TrafficStresser` is saturating the 2.4GHz WiFi band.
+
+## 4. Hardware Requirements
+| Interface | Linux Driver/Module | Validation Method |
+|-----------|---------------------|-------------------|
+| I2C       | `i2c-dev`           | Register Read/Write|
+| GPIO      | `gpio-sysfs`        | State Polling     |
+| BLE       | `bluez`             | RSSI/Scan Latency |
+| PoE       | Vendor Specific     | I2C PMIC Read     |
+```
+# 🚀 SoC Bring-up & Validation Guide
+
+Aegis NetValid Core is designed to be a "stability hammer" for new silicon and embedded boards.
+
+## 1. Validation Workflow
+1.  **Baseline Health**: Run `SoCGuardian` without load to establish idle temperature and load average.
+2.  **Network Saturation**: Start the `TrafficStresser` at 50% bandwidth and monitor for `dmesg` errors (e.g., `eth0: tx timeout`).
+3.  **Thermal Stress**: Scale to 95% bandwidth. Observe the `SoCGuardian` dashboard for "🔥 HOT" status and check if the CPU frequency scales down (Throttling).
+4.  **Service Stability**: Verify that `DNS` and `DHCP` remain responsive under the `NetSvc` engine while the CPU is at 100% load.
+
+## 2. Detecting Driver Issues
+Aegis helps identify common SoC driver bugs:
+- **Interrupt Storms**: Excessive CPU load in `NetSvc` during small-packet stress tests.
+- **Memory Leaks**: Increasing memory usage in `/proc/meminfo` tracked during long-duration (24h+) tests.
+- **Buffer Overflows**: Dropped packets reported by the `DataAggregator` despite low physical interference.
+
+## 3. Recommended Test Parameters
+For a standard ARMv8 SoC:
+```yaml
+stresser:
+  bandwidth: "500M"
+  parallel: 4
+  packet_type: "UDP"
+soc_guardian:
+  interval: 1
+  thermal_threshold: 80
+```
+```
 
 ```
 Aegis_NetValid_Core/

@@ -25,6 +25,8 @@ graph TD
         Sim[IoT Simulator]
         Stress[Traffic Stresser]
         WiFi[WiFi Monitor]
+        SoC[SoC Guardian]
+        NetSvc[Net Service Engine]
     end
 
     Engines -.->|Metrics/Events| Aggregator

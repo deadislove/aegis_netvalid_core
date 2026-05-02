@@ -125,7 +125,8 @@ class AegisCLI:
                             out = raw_out.decode(enc)
                             break
                         except UnicodeDecodeError: continue
-                    match = re.search(r"(?:預設閘道|Default Gateway).*: ([\d\.]+)", out)
+                    # Support various language outputs by matching the common 'Gateway' keyword or local variants
+                    match = re.search(r"(?:Default Gateway|Gateway|預設閘道).*: ([\d\.]+)", out)
                     return match.group(1) if match else "192.168.0.1"
                 case "Darwin":
                     try:
@@ -171,7 +172,8 @@ class AegisCLI:
                         break
                     except UnicodeDecodeError: continue
                 
-                ips = re.findall(r"IPv4 位址[\.\s\:]+([\d\.]+)", out)
+                # Generalized regex to capture IPv4 address across different Windows localizations
+                ips = re.findall(r"(?:IPv4 Address|IPv4 位址)[\.\s\:]+([\d\.]+)", out)
                 return ips[0] if ips else "127.0.0.1"
 
             elif os_type == "Linux":
