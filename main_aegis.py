@@ -20,6 +20,8 @@ from engines.ids_guardian.ids_engine import IDSEngine
 from engines.iot_simulator.simulator_engine import SimulatorEngine
 from engines.traffic_stresser.stresser_engine import StresserEngine
 from engines.wifi_monitor.monitor_engine import MonitorEngine
+from engines.network_service.service_engine import NetworkServiceEngine
+from engines.soc_guardian.soc_engine import SoCGuardianEngine
 
 from core.aegis_core import AegisCore
 from core.cloud_validator import CloudValidator
@@ -265,7 +267,9 @@ class AegisCLI:
             "IDS": IDSEngine(self.core, config=self.config),
             "Simulator": SimulatorEngine(self.core, self.config),
             "Stresser": StresserEngine(self.core, self.config),
-            "WiFi": MonitorEngine(self.core, self.config)
+            "WiFi": MonitorEngine(self.core, self.config),
+            "NetService": NetworkServiceEngine(self.core, self.config),
+            "SoC": SoCGuardianEngine(self.core, self.config)
         }
 
     def update_config_cmd(self, key_path, value):
@@ -369,6 +373,20 @@ class AegisCLI:
             table.add_row("IDS Guardian", health.get("IDS", "??"), f"Threats: {threat_style}{i.get('threats', 0)}[/] | Score: {i.get('score', 100)}")
         except Exception:
             table.add_row("IDS Guardian", "[red]ERR[/red]", "Data Error")
+
+        # 5. Network Service Data
+        try:
+            ns = engine_data.get("NetService", {})
+            table.add_row("Net Services", health.get("NetService", "??"), f"DNS: {ns.get('dns_ms')}ms | GW: {ns.get('gw_link')} | Routes: {ns.get('routes')}")
+        except Exception:
+            table.add_row("Net Services", "[yellow]WARN[/yellow]", "Data Error")
+
+        # 6. SoC Health Data
+        try:
+            soc = engine_data.get("SoC", {})
+            table.add_row("SoC Guardian", health.get("SoC", "??"), f"Temp: {soc.get('temp')} | Load: {soc.get('load')} | PoE: {soc.get('poe')}")
+        except Exception:
+            table.add_row("SoC Guardian", "[yellow]WARN[/yellow]", "Data Error")
 
         grid.add_row(table)
         return grid
