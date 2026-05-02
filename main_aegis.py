@@ -385,7 +385,7 @@ class AegisCLI:
         # 6. SoC Health Data
         try:
             soc = engine_data.get("SoC", {})
-            table.add_row("SoC Guardian", health.get("SoC", "??"), f"Temp: {soc.get('temp')} | Load: {soc.get('load')} | PoE: {soc.get('poe')}")
+            table.add_row("SoC Guardian", health.get("SoC", "??"), f"Temp: {soc.get('temp')} | Freq: {soc.get('mhz')} | Load: {soc.get('load')}")
         except Exception:
             table.add_row("SoC Guardian", "[yellow]WARN[/yellow]", "Data Error")
 

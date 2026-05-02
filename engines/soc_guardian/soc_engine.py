@@ -15,6 +15,7 @@ class SoCGuardianEngine:
         self.stats = {
             "temp": 0.0,
             "load": "0.0 0.0 0.0",
+            "cpu_mhz": 0,
             "throttled": False,
             "poe_status": "N/A"
         }
@@ -31,6 +32,17 @@ class SoCGuardianEngine:
             except (IOError, ValueError, PermissionError) as e:
                 self.core.aegis_log(f"Thermal read error: {e}", "SoC")
         return -1.0
+
+    def _get_cpu_freq(self):
+        # Standard Linux path for CPU frequency (core 0 as sample)
+        freq_path = "/sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq"
+        try:
+            if os.path.exists(freq_path):
+                with open(freq_path, "r") as f:
+                    return int(int(f.read().strip()) / 1000) # Convert to MHz
+        except Exception:
+            return 0
+        return 0
 
     def _get_cpu_load(self):
         try:
@@ -50,11 +62,13 @@ class SoCGuardianEngine:
         while self.is_running:
             temp = self._get_thermal()
             load = self._get_cpu_load()
+            freq = self._get_cpu_freq()
             poe = self._check_poe()
 
             with self.lock:
                 self.stats["temp"] = temp
                 self.stats["load"] = load
+                self.stats["cpu_mhz"] = freq
                 self.stats["poe_status"] = poe
                 # Simple logic for SoC Throttling detection
                 if temp > 85.0:
@@ -79,6 +93,7 @@ class SoCGuardianEngine:
             status = "🔥 HOT" if self.stats["throttled"] else "COLD"
             return {
                 "temp": f"{self.stats['temp']}°C",
+                "mhz": f"{self.stats['cpu_mhz']}MHz",
                 "load": self.stats["load"],
                 "status": status,
                 "poe": self.stats["poe_status"]
