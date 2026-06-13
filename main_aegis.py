@@ -514,10 +514,8 @@ class AegisCLI:
 
             self.stop_all()
 
-if __name__ == "__main__":
+def main():
     try:
-        #print("DEBUG: Initializing Core...")
-        
         app = AegisCLI()
         app.run()
     except Exception as e:
@@ -528,3 +526,6 @@ if __name__ == "__main__":
         print(f"❌ System Level Error: {be}")
     finally:
         print("DEBUG: Process Terminated.")
+
+if __name__ == "__main__":
+    main()

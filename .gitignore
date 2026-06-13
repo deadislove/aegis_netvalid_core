@@ -189,3 +189,4 @@ pip-selfcheck.json
 
 outputs
 temp
+sandbox_env/

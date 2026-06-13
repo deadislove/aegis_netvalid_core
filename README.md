@@ -102,11 +102,11 @@ To enable the `CloudValidator` to successfully connect and send data to AWS Clou
 git clone https://github.com/da-weilin/Aegis_NetValid_Core.git
 cd Aegis_NetValid_Core
 
-# Install dependencies
-pip install -r requirements.txt
+# Install as a CLI tool
+pip install .
 
-# Run the framework
-sudo python main_aegis.py
+# Run the framework directly
+sudo aegis
 ```
 
 ## 🖥️ Interactive Dashboard
