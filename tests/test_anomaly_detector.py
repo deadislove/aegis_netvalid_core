@@ -53,8 +53,7 @@ def test_ddos_attack_returns_category_when_over_absolute_threshold():
     assert status == "CRITICAL"
     assert category == "DDOS_ATTACK"
     assert "DDoS" in reason
-    # DDOS_ATTACK is decisive - the weaker per-device-profile check must not
-    # even be consulted once the absolute threshold is breached.
+    # weaker per-device-profile check must not even be consulted
     detector.profiler.check_threshold_violation.assert_not_called()
 
 

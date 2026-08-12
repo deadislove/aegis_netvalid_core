@@ -16,25 +16,19 @@ class AegisCore:
         self._log_lock = threading.Lock()
         self._log_fh = None
         self._process = psutil.Process()
-        # cpu_percent() always returns 0.0 on its first call (it needs a
-        # baseline to diff against) - prime it here so the first real
-        # dashboard read is already meaningful.
+        # prime cpu_percent's baseline, otherwise the first call returns 0.0
         self._process.cpu_percent(interval=None)
         self._check_privileges()
 
     def _check_privileges(self):
-        if os.getuid() != 0:
+        if self.config.get("demo_mode"):
+            console.print("[bold cyan]Running in demo mode - no root required, simulated traffic only.[/bold cyan]")
+        elif os.getuid() != 0:
             console.print("[bold red]Critical: This tool requires root privileges (sudo) to capture network packets.[/bold red]")
 
         self.logs = []
         self.log_files = f"outputs/logs/aegis_{int(time.time())}.log"
         os.makedirs(os.path.dirname(self.log_files), exist_ok=True)
-        # Keep a single handle open for the process lifetime instead of
-        # re-opening on every aegis_log() call. Each write is still flushed
-        # immediately, so a message is durable on disk (survives the process
-        # being killed) the moment aegis_log() returns - this matches the
-        # previous open+write+close behavior's durability, just without the
-        # repeated open/close syscalls on every message.
         self._log_fh = open(self.log_files, "a", encoding="utf-8")
 
     def fix_log_permissions(self):
@@ -55,9 +49,7 @@ class AegisCore:
 
     def get_self_resource_usage(self):
         """
-        CPU/memory usage of the Aegis process itself (not a monitored
-        device) - useful since Aegis runs several sniffer/stresser threads
-        that can themselves become the bottleneck under load.
+        CPU/memory usage of the Aegis process itself (not a monitored device).
         """
         try:
             return {

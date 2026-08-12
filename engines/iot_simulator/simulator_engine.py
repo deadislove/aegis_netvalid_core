@@ -20,19 +20,26 @@ class SimulatorEngine:
         self.active_devices = []
         self.is_running = False
         self.lock = threading.Lock()
+        self.demo_mode = config.get("demo_mode", False)
+        self.on_packet_sent = None  # optional callback(dict) - wired to IDS in demo mode
 
         self.gateway_ip = config.get("gateway_ip", "192.168.0.1")
-        self.gateway_mac = getmacbyip((self.gateway_ip))
 
         self.stats = {
             "total_sent": 0,
             "device_metrics": {}
         }
-        try:
-            self.socket = conf.L3socket() 
-        except Exception as e:
-            self.core.aegis_log(f"[❌ Simulator] Socket Error: {e}", "SYSTEM")
+
+        if self.demo_mode:
+            self.gateway_mac = None
             self.socket = None
+        else:
+            self.gateway_mac = getmacbyip((self.gateway_ip))
+            try:
+                self.socket = conf.L3socket()
+            except Exception as e:
+                self.core.aegis_log(f"[❌ Simulator] Socket Error: {e}", "SYSTEM")
+                self.socket = None
 
     def _generate_random_mac(self):
         """
@@ -49,7 +56,7 @@ class SimulatorEngine:
         src_ip = device_info["id"]
         # src_mac = device_info["mac"]
         device_type = device_info["type"]
-        
+
         dst_ip = self.gateway_ip
 
         # Building the L2/L3 layer
@@ -58,24 +65,38 @@ class SimulatorEngine:
         match(device_type):
             case "LightBulb":
                 payload = f"status: on, brightness: 80%, ip: {src_ip}"
-                pkt = base_pkt / TCP(dport=1883) / Raw(load=payload)
+                dport = 1883
+                pkt = base_pkt / TCP(dport=dport) / Raw(load=payload)
             case "IPCamera":
                 payload = "X" * 1024
-                pkt = base_pkt/ UDP(dport=5004) / Raw(load=payload)
+                dport = 5004
+                pkt = base_pkt / UDP(dport=dport) / Raw(load=payload)
             case "DDoS_Attacker":
-                pkt = base_pkt / UDP(dport=random.randint(1, 65535)) / Raw(load="ATTACK_FLUX")
+                dport = random.randint(1, 65535)
+                pkt = base_pkt / UDP(dport=dport) / Raw(load="ATTACK_FLUX")
             case _:
-                pkt = base_pkt / UDP(dport=80) / Raw(load="Hello")
-        
-        #send(pkt, verbose=False)
-        self.socket.send(pkt)
+                dport = 80
+                pkt = base_pkt / UDP(dport=dport) / Raw(load="Hello")
+
+        pkt_len = len(pkt)
+
+        if self.demo_mode:
+            if self.on_packet_sent:
+                self.on_packet_sent({
+                    "src": src_ip,
+                    "dport": dport,
+                    "size": pkt_len,
+                    "timestamp": time.time(),
+                })
+        else:
+            self.socket.send(pkt)
 
         with self.lock:
             self.stats["total_sent"] += 1
             if src_ip not in self.stats["device_metrics"]:
                 self.stats["device_metrics"][src_ip] = {"packets": 0, "bytes": 0}
             self.stats["device_metrics"][src_ip]["packets"] += 1
-            self.stats["device_metrics"][src_ip]["bytes"] += len(pkt)
+            self.stats["device_metrics"][src_ip]["bytes"] += pkt_len
 
     def _device_behavior_loop(self, device_info):
         """

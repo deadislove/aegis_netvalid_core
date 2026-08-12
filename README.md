@@ -113,6 +113,27 @@ pip install -e .
 sudo aegis
 ```
 
+**Want to try it before setting up root/`iperf3`/packet capture drivers?**
+```bash
+python main_aegis.py --demo
+```
+Demo mode needs no root, no raw sockets, and no `iperf3` — the Simulator's traffic is evaluated in-memory by the real IDS detection logic (so `infect <IP>` genuinely triggers a detected threat), and the Stresser reports simulated-but-plausible metrics instead of launching real traffic. It's not a substitute for a real test run, but it's the fastest way to see the dashboard and command set working end-to-end.
+
+> A recorded demo (GIF/asciinema) of the dashboard isn't in the repo yet — `--demo` mode above is the next best thing until one is added.
+
+## 🆚 Why Aegis Instead of Assembling Tools Yourself
+
+You can get overlapping pieces of this from other tools — the value of Aegis is having them already wired into one orchestrated, correlated dashboard instead of stitching results together by hand.
+
+| Need | Without Aegis | With Aegis |
+|---|---|---|
+| Bandwidth/loss/jitter testing | Run `iperf3` manually, read its output | Traffic Stresser row, parsed automatically |
+| Threat detection | Stand up Suricata/Zeek, write your own rules | IDS Guardian with port-scan/DDoS/abnormal-traffic signatures out of the box |
+| IoT device behavior simulation | Write custom scripts per device type | IoT Simulator with device profiles + `infect` for attack simulation |
+| Correlating "did the attack cause the latency spike?" | Manually cross-reference timestamps across tools' separate logs | Data Aggregator unifies every engine onto one timestamp, visible on one dashboard |
+| Cloud visibility | Wire up CloudWatch/Grafana yourself | Built-in CloudWatch sync with dashboard-visible sync status |
+| Trying it out | Install and configure each tool separately | `pip install -e . && python main_aegis.py --demo` |
+
 ## 🖥️ Interactive Dashboard
 
 Upon launch, Aegis presents a real-time TUI powered by rich:
@@ -151,6 +172,7 @@ steps:
 - [Cloud Validation](docs/cloud_validation.md) — AWS CloudWatch setup
 - [Hardware Integration](docs/hardware_integration.md) / [SoC Bring-up](docs/soc_bringup_guide.md) — embedded/SoC-specific guidance
 - [Troubleshooting](docs/troubleshooting.md)
+- [Contributing](CONTRIBUTING.md)
 - [Security Policy](SECURITY.md)
 
 ## 📩 Contact & Contributions

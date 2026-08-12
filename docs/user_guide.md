@@ -24,10 +24,16 @@ sudo aegis
 
 Root/Administrator is required for raw packet capture (the IDS sniffer, in particular). Without it, Aegis still runs — you'll see a warning at startup, the IDS/Simulator engines will log permission errors for the raw-socket parts, but the rest of the dashboard (NetService, SoC, Stresser, Cloud, Trends, Aegis Process) works normally.
 
+**No root, no `iperf3`, nothing installed beyond the Python deps?** Use `--demo`:
+```bash
+python main_aegis.py --demo
+```
+The Simulator still runs its full device-behavior logic but hands packets to the IDS in-memory instead of sending them on the wire, so `infect <IP>` still triggers a real detected threat. The Stresser simulates a plausible Mbps/loss/jitter series (tagged `(demo)` on the dashboard) instead of launching `iperf3`. Everything else (WiFi, NetService, SoC, Cloud, Trends, Aegis Process) behaves exactly as in a normal run.
+
 On first launch, Aegis auto-detects your gateway IP, local IP, and network interface, and writes them to `temp/last_config.json`. Override any of them at launch:
 
 ```bash
-sudo aegis --gateway 192.168.1.1 --interface en0 --target 192.168.1.50 --dev-count 10
+sudo aegis --gateway 192.168.1.1 --interface en0 --target 192.168.1.50 --dev-count 10 --demo
 ```
 
 Press **Enter** at any time to drop into command mode; press Enter again on an empty line (or type `back`) to return to the live dashboard.
@@ -40,7 +46,7 @@ Each row polls its engine's `get_report()` on every refresh. The **Status** colu
 |---|---|---|
 | **WiFi Monitor** | SSID, RSSI (dBm), SNR | Read via OS-native tools (`system_profiler` on macOS, `iwconfig`/`/proc/net/wireless` on Linux, `netsh` on Windows). |
 | **IoT Simulator** | Active device count, breakdown by type (e.g. `LightBulb:8, DDoS_Attacker:2`), total packets sent | Devices spawn via `spawn`, mutate via `infect <IP>`. |
-| **Traffic Stresser** | Current Mbps; once a UDP test's final summary lands, also Loss % and Jitter (ms) | Loss/Jitter only appear for `packet_type: UDP` and only after iperf3 emits its end-of-test "receiver" line — expect them blank for the first few seconds of a run, and never for TCP tests. |
+| **Traffic Stresser** | Current Mbps; once a UDP test's final summary lands, also Loss % and Jitter (ms) | Loss/Jitter only appear for `packet_type: UDP` and only after iperf3 emits its end-of-test "receiver" line — expect them blank for the first few seconds of a run, and never for TCP tests. In `--demo` mode the row is tagged `(demo)` and the numbers are simulated, not from real `iperf3` traffic. |
 | **IDS Guardian** | Total threat count, breakdown by signature (`PORT_SCAN`, `ABNORMAL_TRAFFIC`, `DDOS_ATTACK`) | `DDOS_ATTACK` fires on an absolute per-device bandwidth ceiling (`threat_signatures.DDOS_ATTACK.min_kbps`, default 10000); `ABNORMAL_TRAFFIC` fires on a per-device-type profile limit (`device_profiles.<type>.max_kbps`) — DDoS is checked first since it's the stronger signal. |
 | **Net Services** | DNS resolution latency, gateway reachability + RTT, route count, RTT to the Stresser's target (once configured) | Route count is Linux-only today (`ip route show`); shows `0` elsewhere. |
 | **SoC Guardian** | Temp, CPU frequency, load average | **Linux-only by design** — reads `/sys/class/thermal/...`, `/proc/loadavg`. On macOS/Windows (or the host running Aegis in general) this will show placeholder values (`-1.0°C`, `0MHz`, `N/A`) even though the row says `OK` — it's meant for the embedded device under test, not the Aegis host. For the Aegis host's own usage, see "Aegis Process" below. |

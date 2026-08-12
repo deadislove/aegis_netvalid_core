@@ -1,22 +1,6 @@
 """
-At-rest encryption helpers.
-
-Nothing Aegis persists today is a secret: AWS auth flows entirely through
-boto3's own credential chain (see README's "AWS Cloud Configuration"
-section), and `temp/last_config.json` / IDS rule files only hold operational
-settings (IPs, thresholds). This module exists so that when a future
-integration needs to persist something sensitive locally (e.g. a webhook
-token for an alerting integration, an API key for a third-party SIEM), there
-is a ready, tested place to encrypt it rather than writing it to config in
-plaintext.
-
-Usage:
-    from lib import crypto_utils
-
-    key = crypto_utils.load_or_create_key()
-    token = crypto_utils.encrypt_string("super-secret-value", key)
-    ...
-    plaintext = crypto_utils.decrypt_string(token, key)
+At-rest encryption helpers (Fernet). Not wired into anything yet - scaffolding
+for future secrets (e.g. a webhook token) that need to be persisted locally.
 """
 import os
 from cryptography.fernet import Fernet
@@ -30,11 +14,7 @@ def generate_key() -> bytes:
 
 
 def load_or_create_key(key_path: str = DEFAULT_KEY_PATH) -> bytes:
-    """
-    Load a persisted local key, generating and saving one on first use.
-    The key file is created with owner-only permissions (0600) since anyone
-    who can read it can decrypt everything encrypted with it.
-    """
+    """Load a persisted local key, generating one (mode 0600) on first use."""
     if os.path.exists(key_path):
         with open(key_path, "rb") as f:
             return f.read().strip()

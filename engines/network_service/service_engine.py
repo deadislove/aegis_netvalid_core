@@ -10,12 +10,7 @@ class NetworkServiceEngine:
     def __init__(self, core: AegisCore, config: dict):
         self.core = core
         self.config = config.get("network_service", {})
-        # NOTE: gateway_ip lives at the root of the app config (set by
-        # AegisCLI's gateway detection), not under "network_service" - read
-        # it from there, same convention SimulatorEngine already uses. This
-        # also lets AegisCLI.update_config_cmd's existing
-        # `if hasattr(engine, 'gateway_ip')` live-update hook reach this
-        # engine when the user runs `set gateway_ip ...`.
+        # gateway_ip lives at the config root, not under "network_service"
         self.gateway_ip = config.get("gateway_ip", "192.168.0.1")
         self.target_ip = config.get("stresser", {}).get("target_ip")
         self.is_running = False

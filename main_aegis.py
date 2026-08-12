@@ -89,6 +89,10 @@ class AegisCLI:
         parser.add_argument("--interface", help="Override Network Interface")
         parser.add_argument("--target", help="Override Stresser Target IP")
         parser.add_argument("--dev-count", type=int, help="Default IoT device count")
+        parser.add_argument("--demo", action="store_true",
+                             help="Run without root/raw sockets/iperf3: Simulator traffic is evaluated "
+                                  "in-memory by the IDS, and the Stresser simulates its metrics instead "
+                                  "of launching real iperf3 traffic.")
         return parser.parse_args()
 
     def _setup_config(self):
@@ -108,6 +112,7 @@ class AegisCLI:
         if self.args.dev_count:
             base_config["default_device_count"] = self.args.dev_count
             base_config["simulator"]["device_count"] = self.args.dev_count
+        base_config["demo_mode"] = self.args.demo
 
         self.config = base_config
 
@@ -133,7 +138,7 @@ class AegisCLI:
         return os_helpers.get_default_gateway(self.os_type)
 
     def get_local_ip(self):
-        return os_helpers.get_local_ip(self.os_type)
+        return os_helpers.get_local_ip()
 
     def _load_initial_config(self):
         if not os.path.exists(TEMP_DIR):
@@ -218,7 +223,7 @@ class AegisCLI:
             json.dump(conf, f, indent=4)
 
     def _init_engines(self):
-        return {
+        engines = {
             "IDS": IDSEngine(self.core, config=self.config),
             "Simulator": SimulatorEngine(self.core, self.config),
             "Stresser": StresserEngine(self.core, self.config),
@@ -226,6 +231,11 @@ class AegisCLI:
             "NetService": NetworkServiceEngine(self.core, self.config),
             "SoC": SoCGuardianEngine(self.core, self.config)
         }
+        if self.config.get("demo_mode"):
+            # feed the Simulator's synthetic packets straight into the IDS's
+            # real detection logic instead of going out over a raw socket
+            engines["Simulator"].on_packet_sent = engines["IDS"]._on_packet
+        return engines
 
     def update_config_cmd(self, key_path, value):
         """
@@ -288,6 +298,8 @@ class AegisCLI:
         grid.add_column(justify="center", ratio=1)
 
         sys_info = f"OS: [bold cyan]{self.os_type}[/bold cyan] | Gateway: [bold yellow]{self.config['gateway_ip']}[/bold yellow] | Interface: {self.config['interface']}"
+        if self.config.get("demo_mode"):
+            sys_info += " | [bold cyan]DEMO MODE[/bold cyan]"
         grid.add_row(Panel(sys_info, title="🛡️ Aegis System Status", border_style="blue"))
 
         table = Table(title="🛡️ Aegis NetValid Core - Real-time Dashboard", show_header=True, header_style="bold magenta", expand=True)
@@ -321,12 +333,13 @@ class AegisCLI:
         try:
             st = engine_data.get("Stresser", {})
             metrics = f"Current: {st.get('current_mbps', 0)} Mbps"
-            # Loss/jitter are UDP-only and only land once iperf3 emits its
-            # final "receiver" summary line, so only show them once present.
+            # UDP-only, populated once iperf3's final summary line lands
             if st.get('total_packets', 0) > 0:
                 loss_pct = st.get('packet_loss_pct', 0)
                 loss_style = "[red]" if loss_pct > 0 else "[green]"
                 metrics += f" | Loss: {loss_style}{loss_pct}%[/] | Jitter: {st.get('jitter_ms', 0)}ms"
+            if st.get('demo'):
+                metrics += " [cyan](demo)[/cyan]"
             table.add_row("Traffic Stresser", health.get("Stresser", "??"), metrics)
         except Exception:
             table.add_row("Traffic Stresser", "[yellow]WARN[/yellow]", "Data Error")
@@ -377,7 +390,7 @@ class AegisCLI:
         except Exception:
             table.add_row("Cloud Sync", "[yellow]WARN[/yellow]", "Data Error")
 
-        # 8. Trend Sparklines (from report_manager's 1s sampling history)
+        # 8. Trend Sparklines
         try:
             history = self.report_manager.history
             if len(history) < 2:
@@ -389,7 +402,7 @@ class AegisCLI:
         except Exception:
             table.add_row("Trends", "[yellow]WARN[/yellow]", "Data Error")
 
-        # 9. Aegis's own resource usage (not a monitored device)
+        # 9. Aegis Process Data
         try:
             usage = self.core.get_self_resource_usage()
             table.add_row("Aegis Process", "OK", f"CPU: {usage['cpu_percent']:.1f}% | Mem: {usage['memory_mb']:.1f} MB")
@@ -530,8 +543,6 @@ def main():
         print("\nStopping...")
     except BaseException as be:
         print(f"❌ System Level Error: {be}")
-    finally:
-        print("DEBUG: Process Terminated.")
 
 if __name__ == "__main__":
     main()

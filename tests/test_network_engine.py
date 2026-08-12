@@ -9,8 +9,7 @@ def mock_core():
 
 @pytest.fixture
 def engine(mock_core):
-    # gateway_ip/stresser live at the root of the app config, same as the
-    # real AegisCLI config - not nested under "network_service".
+    # gateway_ip/stresser live at the config root, not under "network_service"
     config = {
         "gateway_ip": "192.168.1.1",
         "stresser": {"target_ip": "10.0.0.5"},

@@ -15,10 +15,8 @@ class AnomalyDetector:
         when CLEAR - used by IDSEngine to keep a per-type threat count.
         """
 
-        # DDOS_ATTACK is an absolute, device-type-agnostic bandwidth ceiling
-        # (config: threat_signatures.DDOS_ATTACK.min_kbps) - checked first
-        # since it's a stronger, more specific signal than a device merely
-        # exceeding its own per-type profile limit.
+        # DDOS_ATTACK is an absolute bandwidth ceiling, checked before the
+        # per-device-type profile limit below since it's the stronger signal.
         ddos_sig = self.signatures.get("DDOS_ATTACK", {})
         ddos_threshold = ddos_sig.get("min_kbps")
         if ddos_threshold is not None:

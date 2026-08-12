@@ -1,10 +1,16 @@
-from unittest.mock import MagicMock
+import time
+from unittest.mock import MagicMock, patch
 from engines.traffic_stresser.stresser_engine import StresserEngine
 
 
 def make_engine():
     core = MagicMock()
     return StresserEngine(core, {"stresser": {"packet_type": "UDP"}})
+
+
+def make_demo_engine():
+    core = MagicMock()
+    return StresserEngine(core, {"stresser": {"target_ip": "127.0.0.1", "bandwidth": "100M"}, "demo_mode": True})
 
 
 def test_parses_live_mbps_from_interval_line():
@@ -55,3 +61,23 @@ def test_get_report_returns_new_fields():
     report = engine.get_report()
     assert report["jitter_ms"] == 1.2
     assert report["packet_loss_pct"] == 2.5
+
+
+def test_demo_mode_start_does_not_spawn_subprocess():
+    engine = make_demo_engine()
+    with patch("subprocess.Popen") as mock_popen:
+        engine.start()
+        time.sleep(0.1)
+        engine.stop()
+
+    mock_popen.assert_not_called()
+    assert engine.stats["demo"] is True
+
+
+def test_demo_mode_produces_bounded_mbps():
+    engine = make_demo_engine()
+    engine.start()
+    time.sleep(0.1)
+    engine.stop()
+
+    assert 0.0 <= engine.stats["current_mbps"] <= 100.0

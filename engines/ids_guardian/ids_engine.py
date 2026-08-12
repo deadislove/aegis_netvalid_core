@@ -12,6 +12,7 @@ class IDSEngine:
     def __init__(self, core: AegisCore, config):
         self.core = core
         self.config = config.get("ids", {})
+        self.demo_mode = config.get("demo_mode", False)
         self.profiler = TrafficProfiler(self.core, config_path=self.config.get('config_path'))
         signatures = self.profiler.config.get("threat_signatures", {})
         self.detector = AnomalyDetector(self.profiler, signatures=signatures)
@@ -55,7 +56,12 @@ class IDSEngine:
 
         if self.is_running:
             return
-        
+
+        if self.demo_mode:
+            self.is_running = True
+            self.core.aegis_log("[🛡️ IDS Engine] Demo mode: evaluating simulated traffic, no raw-socket sniffer.", SYSTEM_NAME)
+            return
+
         # print("[🛡️ IDS Engine] Initializing Sniffer...")
         self.core.aegis_log("[🛡️ IDS Engine] Initializing Sniffer...", SYSTEM_NAME)
         self.sniffer = PacketSniffer(self.core, interface=self.config.get('interface'))
