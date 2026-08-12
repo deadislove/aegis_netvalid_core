@@ -61,8 +61,7 @@ class MonitorEngine:
         Parsing the airport tool for macOS
         """
         try:
-            metrics_cmd = "system_profiler SPAirPortDataType"
-            output = subprocess.check_output(metrics_cmd, shell=True).decode('utf-8')
+            output = subprocess.check_output(["system_profiler", "SPAirPortDataType"]).decode('utf-8')
         
             combined_match = re.search(r"Signal / Noise:\s+(-?\d+)\s+dBm\s+/\s+(-?\d+)\s+dBm", output)
             rssi_match = re.search(r"RSSI:\s+(-?\d+)", output)

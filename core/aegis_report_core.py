@@ -45,6 +45,29 @@ class AegisReportCore:
             self.history = stats_history
 
         report_dir = f"outputs/reports/report_{int(time.time())}"
+
+        try:
+            self._write_report_files(report_dir)
+        except Exception as e:
+            self._core.aegis_log(f"❌ Failed to generate report at {report_dir}: {e}", "SYSTEM")
+            return
+
+        # Automatically return permissions to regular users.
+        try:
+            real_uid = int(os.environ.get('SUDO_UID', os.getuid()))
+            real_gid = int(os.environ.get('SUDO_GID', os.getgid()))
+
+            for root, dirs, files in os.walk(report_dir):
+                for momo in dirs + files:
+                    os.chown(os.path.join(root, momo), real_uid, real_gid)
+
+            os.chown(report_dir, real_uid, real_gid)
+        except Exception as e:
+            self._core.aegis_log(f"⚠️ Failed to fix permissions: {e}", "SYSTEM")
+
+        self._core.aegis_log(f"📊 Report generated at: {report_dir}", "SYSTEM")
+
+    def _write_report_files(self, report_dir):
         os.makedirs(report_dir, exist_ok=True)
 
         # 1. Draw a bandwidth trend chart.
@@ -106,20 +129,3 @@ class AegisReportCore:
 
         with open(f"{report_dir}/data.json", "w") as f:
             json.dump(self.history, f, indent=4)
-
-        # self._core.aegis_log(f"📊 Report generated at: {report_dir}", "SYSTEM")
-
-        # Automatically return permissions to regular users.
-        try:
-            real_uid = int(os.environ.get('SUDO_UID', os.getuid()))
-            real_gid = int(os.environ.get('SUDO_GID', os.getgid()))
-
-            for root, dirs, files in os.walk(report_dir):
-                for momo in dirs + files:
-                    os.chown(os.path.join(root, momo), real_uid, real_gid)
-
-            os.chown(report_dir, real_uid, real_gid)
-        except Exception as e:
-            self._core.aegis_log(f"⚠️ Failed to fix permissions: {e}", "SYSTEM")
-
-        self._core.aegis_log(f"📊 Report generated at: {report_dir}", "SYSTEM")

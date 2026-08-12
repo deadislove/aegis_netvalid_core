@@ -2,9 +2,7 @@ import time
 import threading
 import os
 import json
-import subprocess
 import platform
-import re
 import argparse
 import logging
 import yaml
@@ -27,6 +25,7 @@ from core.cloud_validator import CloudValidator
 from core.aegis_report_core import AegisReportCore
 from core.orchestrator import Orchestrator
 from core.data_aggregator import DataAggregator
+from lib import os_helpers
 
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 conf.verb = 0
@@ -112,73 +111,11 @@ class AegisCLI:
         console.print(help_table)
 
     def _get_default_gateway(self):
-        try:
-            match(self.os_type):
-                case "Windows":
-                    raw_out = subprocess.check_output("ipconfig", shell=True)
-                    # Attempt to decode with multiple encodings to support international systems
-                    out = ""
-                    for enc in ['cp950', 'utf-8', 'gbk', 'cp437']:
-                        try:
-                            out = raw_out.decode(enc)
-                            break
-                        except UnicodeDecodeError: continue
-                    # Support international locales by matching keywords and extracting IPv4
-                    match = re.search(r"(?:Default Gateway|Gateway|預設閘道).*: ([\d\.]+)", out)
-                    return match.group(1) if match else "192.168.0.1"
-                case "Darwin":
-                    try:
-                        cmd = "system_profiler SPAirPortDataType"
-                        out = subprocess.check_output(cmd, shell=True).decode()
+        return os_helpers.get_default_gateway(self.os_type)
 
-                        match = re.search(r"Router:\s+([\d\.]+)", out)
-                        if match:
-                            gateway = match.group(1)
-                            return gateway
-                        return "192.168.0.1"
-                    except Exception:
-                        return "192.168.0.1"
-                case "Linux":
-                    try:
-                        with open("/proc/net/route", "r") as f:
-                            for line in f.readlines()[1:]:
-                                parts = line.split()
-
-                                if parts[1] == '00000000':
-                                    gw_hex = parts[2]
-                                    return ".".join([str(int(gw_hex[i:i+2], 16)) for i in range(6, -2, -2)])
-                    except Exception:
-                        pass
-                    return "192.168.0.1"
-        except Exception:
-            return "192.168.1.1" # Fallback to common alternative gateway
-        
     def get_local_ip(self):
-        os_type = platform.system()
-        try:
-            if os_type == "Darwin":
-                # return subprocess.check_output(["ipconfig", "getifaddr", "en0"]).decode().strip()
-                
-                return subprocess.check_output("ipconfig getifaddr $(networksetup -listallhardwareports | awk '/Wi-Fi/{getline; print $2}')", shell=True).decode().strip()
+        return os_helpers.get_local_ip(self.os_type)
 
-            elif os_type == "Windows":
-                raw_out = subprocess.check_output("ipconfig")
-                out = ""
-                for enc in ['cp950', 'utf-8', 'gbk', 'cp437']:
-                    try:
-                        out = raw_out.decode(enc)
-                        break
-                    except UnicodeDecodeError: continue
-                # Generalized regex to capture IPv4 address across different Windows localizations
-                ips = re.findall(r"(?:IPv4 Address|IPv4 位址)[\.\s\:]+([\d\.]+)", out)
-                return ips[0] if ips else "127.0.0.1"
-            elif os_type == "Linux":
-                # Using a more robust method to get IP if hostname -I fails
-                return subprocess.check_output("hostname -I | awk '{print $1}'", shell=True).decode().strip() or "127.0.0.1"
-
-        except Exception:
-            return "127.0.0.1"
-        
     def _load_initial_config(self):
         if not os.path.exists(TEMP_DIR):
             os.mkdir(TEMP_DIR)

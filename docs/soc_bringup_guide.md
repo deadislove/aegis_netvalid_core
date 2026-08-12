@@ -83,8 +83,8 @@ Aegis_NetValid_Core/
 │   ├── ids_guardian/       # Threat detection & defense
 │   ├── iot_simulator/      # IoT device behavior simulation
 │   ├── traffic_stresser/   # Bandwidth & stress testing
-    ├── network_service/    # DNS, DHCP & Routing validation
-    ├── soc_guardian/       # SoC thermal & hardware health monitoring
+│   ├── network_service/    # DNS, DHCP & Routing validation
+│   ├── soc_guardian/       # SoC thermal & hardware health monitoring
 │   └── wifi_monitor/       # RF performance & latency monitoring
 ├── core/                   # Framework Logic
 │   ├── orchestrator.py     # Engine scheduling & state synchronization

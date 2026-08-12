@@ -40,18 +40,18 @@ graph TD
 ## Component Breakdown
 
 ### 1. Orchestrator (The Brain)
-The Orchestrator manages the entire system lifecycle using a **Non-blocking Process Management** model.
-- **Process Isolation**: Each engine is spawned as an independent OS process using Python's `multiprocessing` to bypass the Global Interpreter Lock (GIL).
-- **Interlock Logic**: Ensures dependencies are met (e.g., the `IDS` must be healthy and capturing before the `Traffic Stresser` begins).
-- **State Synchronization**: Uses shared memory or Inter-Process Communication (IPC) to monitor engine health in real-time.
+The Orchestrator manages the entire system lifecycle using a **threading-based concurrency** model.
+- **Concurrent Execution**: Each engine runs on its own daemon `threading.Thread`, so blocking work (packet capture, iperf3 streaming) doesn't stall the TUI or the other engines. Engines share the Orchestrator's process and interpreter — this gives logical isolation (an uncaught exception in one engine's thread won't crash the others) but not OS-level process isolation, and it does not bypass the GIL.
+- **Ordered Startup**: Engines are started in a fixed priority order (`WiFi → IDS → Simulator → Stresser`) in `Orchestrator.start_all()`. A failure in one engine's `start()` is caught and logged rather than aborting the rest of the sequence — there is currently no health-gate that waits for a prior engine to be confirmed ready before the next one starts.
+- **State Synchronization**: `get_system_health()` polls each engine's `is_running` flag (or thread liveness) on demand. There is no shared-memory or IPC layer.
 
 ### 2. Data Aggregator (The Hub)
-Acting as the central nervous system, the Aggregator handles high-throughput data streams.
-- **Unified Timestamping**: Normalizes events from different engines onto a single timeline to enable accurate correlation analysis (e.g., matching a latency spike with a specific DDoS attack).
-- **Async Buffering**: Uses `asyncio.Queue` to ingest data from engines without introducing backpressure to the testing logic.
+Acting as the central nervous system, the Aggregator normalizes engine output into one timestamped snapshot per poll.
+- **Unified Timestamping**: `collect_all_metrics()` stamps a single `time.time()` across every engine's `get_report()` output, so metrics from different engines can be correlated on one timeline (e.g., matching a latency spike with a specific DDoS attack).
+- **Synchronous Polling**: The main TUI loop calls `collect_all_metrics()` directly on each render tick; a rolling in-memory history (last 100 snapshots) backs `get_latest_summary()` for the Cloud Validator and report generator.
 
 ### 3. Engine Layer
-Engines are autonomous units designed to perform specific validation tasks. They follow a standardized interface (`start`, `stop`, `get_status`), making the framework easily extensible.
+Engines are autonomous units designed to perform specific validation tasks. They follow a standardized interface (`start`, `stop`, `get_report`), making the framework easily extensible.
 
 ---
 
@@ -85,5 +85,5 @@ sequenceDiagram
 ```
 
 ## Reliability & Resilience
-- **Fault Isolation**: A crash in a specific engine (e.g., Scapy buffer overflow in the Stresser) will not terminate the Orchestrator or other monitoring engines.
-- **Graceful Teardown**: Upon exit, the Orchestrator ensures all child processes are terminated and the Data Aggregator flushes all remaining buffers to the `outputs/` directory to prevent data loss.
+- **Fault Isolation (logical, not OS-level)**: An uncaught Python exception inside one engine's thread will not crash the Orchestrator or the other engines, since each engine's `start()` call is wrapped independently. This is thread-level isolation, not process-level — engines share one interpreter and address space, so a native-level crash (e.g. a segfault inside a C extension such as libpcap) can still take down the whole process. Moving engines to `multiprocessing.Process` for true process isolation is a tracked improvement, not yet implemented.
+- **Graceful Teardown**: Upon exit, the Orchestrator calls `stop()` on every engine to signal its thread to exit, and the Report Core flushes the latest data to the `outputs/` directory before the process ends.

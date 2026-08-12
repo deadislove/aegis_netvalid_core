@@ -18,7 +18,9 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# NOTE: the generic `lib/` packaging-artifact pattern was removed here — it
+# was silently swallowing this project's own top-level lib/ package. Build
+# artifacts under build/lib/ are still covered by the build/ rule above.
 lib64/
 parts/
 sdist/
@@ -176,12 +178,11 @@ pyrightconfig.json
 ### venv ###
 # Virtualenv
 # http://iamzed.com/2009/05/07/a-primer-on-virtualenv/
-[Bb]in
-[Ii]nclude
-[Ll]ib
-[Ll]ib64
-[Ll]ocal
-[Ss]cripts
+# NOTE: the generic bin/include/lib/local/scripts patterns from the
+# gitignore.io venv template were removed here — this project keeps its
+# venv under the explicitly-ignored `venv/` directory (see "Environments"
+# above), and those generic top-level patterns were silently swallowing
+# the project's own `lib/` package.
 pyvenv.cfg
 pip-selfcheck.json
 

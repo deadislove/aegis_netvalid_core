@@ -20,14 +20,16 @@ Aegis_NetValid_Core/
 │   ├── ids_guardian/       # Threat detection & defense
 │   ├── iot_simulator/      # IoT device behavior simulation
 │   ├── traffic_stresser/   # Bandwidth & stress testing
-    ├── network_service/    # DNS, DHCP & Routing validation
-    ├── soc_guardian/       # SoC thermal & hardware health monitoring
+│   ├── network_service/    # DNS, DHCP & Routing validation
+│   ├── soc_guardian/       # SoC thermal & hardware health monitoring
 │   └── wifi_monitor/       # RF performance & latency monitoring
 ├── core/                   # Framework Logic
 │   ├── orchestrator.py     # Engine scheduling & state synchronization
 │   ├── cloud_validator.py  # Cloud validation (AWS IoT / CloudWatch)
 │   └── data_aggregator.py  # Data hub for unified timestamping
 ├── lib/                    # Shared Utilities (Encryption, OS helpers)
+│   ├── os_helpers.py       # Cross-platform gateway/IP detection & console decoding
+│   └── crypto_utils.py     # At-rest encryption helpers (Fernet) for future secret storage
 ├── outputs/                # Reports & Logs
 │   ├── logs/               # Integrated system logs
 │   └── reports/            # Auto-generated HTML/PDF analysis reports
@@ -38,9 +40,8 @@ Aegis_NetValid_Core/
 
 1. Heterogeneous Orchestration
 
-- Lifecycle Management: One-click sequential execution (e.g., Start Simulator → Start IDS → Launch Stresser).
-- Sync & Interlock: Ensures critical engines (like IDS) are fully operational before stress tests begin to prevent data loss.
-- Non-blocking Execution: Leverages multiprocessing and asyncio for simultaneous engine operation.
+- Lifecycle Management: One-click, ordered startup sequence (WiFi → IDS → Simulator → Stresser), with per-engine failures logged instead of aborting the whole sequence.
+- Non-blocking Execution: Each engine runs on its own daemon thread, so long-running work (packet capture, iperf3 streaming) doesn't block the TUI or the other engines.
 
 2. Edge-to-Cloud Validation
 
