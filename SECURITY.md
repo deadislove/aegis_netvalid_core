@@ -29,7 +29,7 @@ If you discover a security vulnerability in this project (e.g. command
 injection, unsafe deserialization, credential handling issues, or privilege
 escalation), please report it privately rather than opening a public issue:
 
-- Email: **deadislove7689@gmail.com**
+- Email: **daweilin7689@gmail.com**
 - Include: affected file(s)/version, a description of the issue, and, if
   possible, steps to reproduce.
 
