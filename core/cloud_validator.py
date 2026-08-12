@@ -1,5 +1,4 @@
 import boto3
-import time
 from datetime import datetime
 from typing import Dict, Any
 

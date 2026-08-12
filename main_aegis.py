@@ -5,7 +5,6 @@ import json
 import subprocess
 import platform
 import re
-import sys
 import argparse
 import logging
 import yaml
@@ -29,7 +28,6 @@ from core.aegis_report_core import AegisReportCore
 from core.orchestrator import Orchestrator
 from core.data_aggregator import DataAggregator
 
-sys.stderr = open(os.devnull, 'w')
 logging.getLogger("scapy.runtime").setLevel(logging.ERROR)
 conf.verb = 0
 

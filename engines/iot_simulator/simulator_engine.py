@@ -1,7 +1,7 @@
 import threading
 import time
 import random
-from scapy.all import IP, UDP, TCP, Raw, Ether, send, getmacbyip, L3RawSocket, conf
+from scapy.all import IP, UDP, TCP, Raw, getmacbyip, conf
 from core.aegis_core import AegisCore
 
 SYSTEM_NAME = "IOT_SIMULATOR"

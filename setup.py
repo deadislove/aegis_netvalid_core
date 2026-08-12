@@ -5,6 +5,11 @@ setup(
     version="1.0.0",
     author="Da-Wei Lin",
     description="Aegis NetValid Core - Network Security & Stress Tool CLI",
+    license="MIT",
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "Operating System :: OS Independent",
+    ],
     packages=find_packages(),
     py_modules=['main_aegis'],
     include_package_data=True,
