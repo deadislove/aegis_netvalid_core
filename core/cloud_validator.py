@@ -1,3 +1,4 @@
+import time
 import boto3
 from datetime import datetime
 from typing import Dict, Any
@@ -9,7 +10,11 @@ class CloudValidator:
         self.enabled = self.config.get("enabled", False)
         self.region = self.config.get("region", "us-east-1")
         self.namespace = self.config.get("namespace", "Aegis/NetValidCore")
-        
+
+        self.last_sync_time = None
+        self.last_sync_status = "NEVER"
+        self.last_sync_error = None
+
         self.cw = None
         if self.enabled:
             self._init_aws_client()
@@ -79,6 +84,18 @@ class CloudValidator:
         if metric_data:
             try:
                 self.cw.put_metric_data(Namespace=self.namespace, MetricData=metric_data)
-                # self.core.aegis_log("Metrics successfully synced to CloudWatch", "Cloud")
+                self.last_sync_time = time.time()
+                self.last_sync_status = "OK"
+                self.last_sync_error = None
             except Exception as e:
+                self.last_sync_status = "ERROR"
+                self.last_sync_error = str(e)
                 self.core.aegis_log(f"CloudWatch sync error: {e}", "Cloud")
+
+    def get_status(self) -> Dict[str, Any]:
+        return {
+            "enabled": self.enabled,
+            "last_sync_time": self.last_sync_time,
+            "last_sync_status": self.last_sync_status,
+            "last_sync_error": self.last_sync_error,
+        }

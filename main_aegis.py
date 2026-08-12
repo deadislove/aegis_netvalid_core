@@ -34,6 +34,25 @@ console = Console()
 TEMP_DIR = "temp"
 LAST_CONFIG_FILE = os.path.join(TEMP_DIR, "last_config.json")
 
+SPARK_CHARS = "▁▂▃▄▅▆▇█"
+
+def sparkline(values, width=20):
+    """
+    Render a compact Unicode block-character trend line for the last
+    `width` values (e.g. recent Mbps/threat samples from report history).
+    """
+    values = values[-width:]
+    if not values:
+        return ""
+    lo, hi = min(values), max(values)
+    if hi == lo:
+        return SPARK_CHARS[0] * len(values)
+    scale = len(SPARK_CHARS) - 1
+    return "".join(
+        SPARK_CHARS[min(int((v - lo) / (hi - lo) * scale), scale)]
+        for v in values
+    )
+
 class AegisCLI:
     def __init__(self):
         self.args = self._parse_args()
@@ -291,14 +310,24 @@ class AegisCLI:
         # 2. Simulator Data
         try:
             s = engine_data.get("Simulator", {})
-            table.add_row("IoT Simulator", health.get("Simulator", "??"), f"Devices: {s.get('active_devices', 0)} | Total Packets: {s.get('total_sent', 0)}")
+            type_counts = s.get('device_type_counts', {})
+            breakdown = ", ".join(f"{k}:{v}" for k, v in type_counts.items())
+            breakdown_str = f" ({breakdown})" if breakdown else ""
+            table.add_row("IoT Simulator", health.get("Simulator", "??"), f"Devices: {s.get('active_devices', 0)}{breakdown_str} | Total Packets: {s.get('total_sent', 0)}")
         except Exception:
             table.add_row("IoT Simulator", "[yellow]WARN[/yellow]", "Data Error")
 
         # 3. Stresser Data
         try:
             st = engine_data.get("Stresser", {})
-            table.add_row("Traffic Stresser", health.get("Stresser", "??"), f"Current: {st.get('current_mbps', 0)} Mbps")
+            metrics = f"Current: {st.get('current_mbps', 0)} Mbps"
+            # Loss/jitter are UDP-only and only land once iperf3 emits its
+            # final "receiver" summary line, so only show them once present.
+            if st.get('total_packets', 0) > 0:
+                loss_pct = st.get('packet_loss_pct', 0)
+                loss_style = "[red]" if loss_pct > 0 else "[green]"
+                metrics += f" | Loss: {loss_style}{loss_pct}%[/] | Jitter: {st.get('jitter_ms', 0)}ms"
+            table.add_row("Traffic Stresser", health.get("Stresser", "??"), metrics)
         except Exception:
             table.add_row("Traffic Stresser", "[yellow]WARN[/yellow]", "Data Error")
 
@@ -306,14 +335,20 @@ class AegisCLI:
         try:
             i = engine_data.get("IDS", {})
             threat_style = "[red]" if i.get('threats', 0) > 0 else "[white]"
-            table.add_row("IDS Guardian", health.get("IDS", "??"), f"Threats: {threat_style}{i.get('threats', 0)}[/] | Score: {i.get('score', 100)}")
+            by_type = i.get('threat_by_type', {})
+            breakdown = ", ".join(f"{k}:{v}" for k, v in by_type.items())
+            breakdown_str = f" ({breakdown})" if breakdown else ""
+            table.add_row("IDS Guardian", health.get("IDS", "??"), f"Threats: {threat_style}{i.get('threats', 0)}[/]{breakdown_str} | Score: {i.get('score', 100)}")
         except Exception:
             table.add_row("IDS Guardian", "[red]ERR[/red]", "Data Error")
 
         # 5. Network Service Data
         try:
             ns = engine_data.get("NetService", {})
-            table.add_row("Net Services", health.get("NetService", "??"), f"DNS: {ns.get('dns_ms')}ms | GW: {ns.get('gw_link')} | Routes: {ns.get('routes')}")
+            metrics = f"DNS: {ns.get('dns_ms')}ms | GW: {ns.get('gw_link')} ({ns.get('gw_rtt_ms', 'N/A')}ms) | Routes: {ns.get('routes')}"
+            if ns.get('target_rtt_ms', 'N/A') != 'N/A':
+                metrics += f" | Target RTT: {ns.get('target_rtt_ms')}ms"
+            table.add_row("Net Services", health.get("NetService", "??"), metrics)
         except Exception:
             table.add_row("Net Services", "[yellow]WARN[/yellow]", "Data Error")
 
@@ -323,6 +358,43 @@ class AegisCLI:
             table.add_row("SoC Guardian", health.get("SoC", "??"), f"Temp: {soc.get('temp')} | Freq: {soc.get('mhz')} | Load: {soc.get('load')}")
         except Exception:
             table.add_row("SoC Guardian", "[yellow]WARN[/yellow]", "Data Error")
+
+        # 7. Cloud Sync Status
+        try:
+            if not self.cloud_validator:
+                table.add_row("Cloud Sync", "N/A", "CloudValidator not initialized")
+            else:
+                cs = self.cloud_validator.get_status()
+                if not cs["enabled"]:
+                    table.add_row("Cloud Sync", "IDLE", "Disabled (set cloud.enabled true)")
+                elif cs["last_sync_status"] == "NEVER":
+                    table.add_row("Cloud Sync", "??", "Enabled, waiting for first sync")
+                elif cs["last_sync_status"] == "OK":
+                    ago = time.time() - cs["last_sync_time"]
+                    table.add_row("Cloud Sync", "OK", f"Last sync: {ago:.0f}s ago")
+                else:
+                    table.add_row("Cloud Sync", "[red]ERR[/red]", f"Sync failed: {cs['last_sync_error']}")
+        except Exception:
+            table.add_row("Cloud Sync", "[yellow]WARN[/yellow]", "Data Error")
+
+        # 8. Trend Sparklines (from report_manager's 1s sampling history)
+        try:
+            history = self.report_manager.history
+            if len(history) < 2:
+                table.add_row("Trends", "--", "Collecting samples...")
+            else:
+                mbps_spark = sparkline([h["mbps"] for h in history])
+                threat_spark = sparkline([h["threats"] for h in history])
+                table.add_row("Trends", "--", f"Mbps: {mbps_spark} | Threats: {threat_spark}")
+        except Exception:
+            table.add_row("Trends", "[yellow]WARN[/yellow]", "Data Error")
+
+        # 9. Aegis's own resource usage (not a monitored device)
+        try:
+            usage = self.core.get_self_resource_usage()
+            table.add_row("Aegis Process", "OK", f"CPU: {usage['cpu_percent']:.1f}% | Mem: {usage['memory_mb']:.1f} MB")
+        except Exception:
+            table.add_row("Aegis Process", "[yellow]WARN[/yellow]", "Data Error")
 
         grid.add_row(table)
         return grid
@@ -385,8 +457,6 @@ class AegisCLI:
                     console.print(f"[red]Unknown command: {cmd}[/red] (Try: help, set cloud.enabled true, stress start, back)")
 
             if self.running:
-                console.print("[dim]Returning to Dashboard...[/dim]")
-                time.sleep(0.5)
                 live.start()
 
     def start_all(self):
@@ -397,6 +467,7 @@ class AegisCLI:
         self.orchestrator.stop_all()
 
         self.core.fix_log_permissions()
+        self.core.close_log()
         console.print("[bold red]Aegis Core Shutting Down...[/bold red]")
 
     def run(self):

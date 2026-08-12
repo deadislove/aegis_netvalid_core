@@ -11,7 +11,10 @@ class Orchestrator:
         self.core.aegis_log("Initiating sequence: Starting all engines...", "Orchestrator")
         
         # Priority management example: Start the monitoring class first, then start the simulation class.
-        priority_order = ["WiFi", "IDS", "Simulator", "Stresser"]
+        # NetService/SoC are passive monitors like WiFi - no reason to start
+        # them any later, and every engine must be listed here or start_all()
+        # silently never calls its start() at all.
+        priority_order = ["WiFi", "NetService", "SoC", "IDS", "Simulator", "Stresser"]
         
         for name in priority_order:
             if name in self.engines:

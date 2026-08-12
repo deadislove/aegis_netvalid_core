@@ -89,6 +89,31 @@ pip install -r requirements.txt
 
 ---
 
+### 5. `sudo aegis` Doesn't Reflect Code Changes You Just Made
+
+**Symptoms:**
+- You edited the source (e.g. fixed a bug, pulled a new commit), but `sudo aegis` still behaves like the old version.
+- Engines that should be running show `DOWN` on the dashboard even though the code looks right.
+- The TUI feels less responsive than you remember it being after a fix.
+
+**Cause:**
+If you installed with `pip install .` (a regular, non-editable install), pip **copies** `main_aegis.py` and the `core/`/`engines/`/`lib/` packages into `venv/lib/pythonX.Y/site-packages/` at install time. The `aegis` command (`venv/bin/aegis`) imports from that copy — not from your working directory — so any edit you make to the repo afterward has **zero effect** on `sudo aegis` until you reinstall.
+
+**Solution:**
+Reinstall in **editable mode** so the installed command always points at your working tree:
+```bash
+pip install -e .
+```
+This only needs to be done once; after that, `sudo aegis` picks up source changes immediately, with no reinstall step. If you already have a stale regular install, running `pip install -e .` again will replace it.
+
+To check which one you have:
+```bash
+python -c "import main_aegis; print(main_aegis.__file__)"
+```
+If the printed path is under `venv/lib/.../site-packages/`, you have a stale copy — reinstall with `-e`. If it points into your repo checkout, you're on the editable install.
+
+---
+
 ## 💡 General Debugging Tips
 -   **Check Logs:** Review the real-time logs in the TUI or the `outputs/logs/` directory for any additional error messages or warnings.
 -   **Isolate Components:** If a specific engine fails, try running other engines separately (if possible) to isolate the problem.

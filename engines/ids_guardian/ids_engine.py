@@ -19,10 +19,11 @@ class IDSEngine:
         self.is_running = False
 
         self.threat_count = 0
+        self.threat_by_type = {}
         self.last_status = "Safe"
 
         self.alert_history = {}
-        
+
 
     def _on_packet(self, data):
         """
@@ -30,13 +31,15 @@ class IDSEngine:
         """
         src_ip = data.get("src", "Unknown")
         self.profiler.update_profile(data)
-        status, reason = self.detector.evaluate(data["src"], device_type="Unknown")
+        status, reason, category = self.detector.evaluate(data["src"], device_type="Unknown")
 
         self.last_status = status
 
         if status == "CRITICAL":
             # print(f"[🛡️ IDS Engine] ALERT: {reason}")
             self.threat_count +=1
+            if category:
+                self.threat_by_type[category] = self.threat_by_type.get(category, 0) + 1
 
             current_time = time.time()
             last_alert_time = self.alert_history.get(src_ip, 0)
@@ -87,5 +90,6 @@ class IDSEngine:
             "engine": "IDS Guardian",
             "status": "MONITORING" if self.is_running else "IDLE",
             "threats": self.threat_count,
+            "threat_by_type": dict(self.threat_by_type),
             "score": status_color
         }

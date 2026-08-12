@@ -103,8 +103,11 @@ To enable the `CloudValidator` to successfully connect and send data to AWS Clou
 git clone https://github.com/da-weilin/Aegis_NetValid_Core.git
 cd Aegis_NetValid_Core
 
-# Install as a CLI tool
-pip install .
+# Install as a CLI tool (editable install - keeps the `aegis` command in
+# sync with this checkout, so future `git pull`s / local edits take effect
+# without reinstalling; see docs/troubleshooting.md if you install with a
+# plain `pip install .` instead and later edits don't seem to take effect)
+pip install -e .
 
 # Run the framework directly
 sudo aegis
@@ -139,6 +142,16 @@ steps:
     target: "192.168.0.105"
   - action: "stress_start"
 ```
+
+## 📚 Documentation
+
+- [User Guide](docs/user_guide.md) — full dashboard field reference, CLI commands, day-to-day usage
+- [Architecture](docs/architecture.md) — how the Orchestrator/Aggregator/Engines fit together
+- [Engine Development](docs/engine_development.md) — how to add a new engine
+- [Cloud Validation](docs/cloud_validation.md) — AWS CloudWatch setup
+- [Hardware Integration](docs/hardware_integration.md) / [SoC Bring-up](docs/soc_bringup_guide.md) — embedded/SoC-specific guidance
+- [Troubleshooting](docs/troubleshooting.md)
+- [Security Policy](SECURITY.md)
 
 ## 📩 Contact & Contributions
 

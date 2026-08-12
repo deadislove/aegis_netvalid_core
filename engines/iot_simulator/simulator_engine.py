@@ -159,5 +159,13 @@ class SimulatorEngine:
 
     def get_report(self):
         report = self.stats.copy()
-        report["active_devices"] = len(self.active_devices)
+        devices = self.active_devices
+        report["active_devices"] = len(devices)
+
+        type_counts = {}
+        for dev in devices:
+            t = dev.get("type", "Unknown")
+            type_counts[t] = type_counts.get(t, 0) + 1
+        report["device_type_counts"] = type_counts
+
         return report
